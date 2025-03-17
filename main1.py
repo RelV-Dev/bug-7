@@ -138,8 +138,8 @@ def exit_listener():
 def main():
     global running
     
-    start_nisn = 2000000  # Starting from 002000000
-    end_nisn = 9999999    # Ending at 009999999
+    start_nisn = 89600042  # Starting from 002000000
+    end_nisn = 89600050    # Ending at 009999999
     
     print(f"{Colors.BLUE}[*] Starting brute force attack from {start_nisn} to {end_nisn}{Colors.RESET}")
     print(f"{Colors.BLUE}[*] Results will be logged to {log_file}{Colors.RESET}")
