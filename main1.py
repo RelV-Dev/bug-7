@@ -160,8 +160,8 @@ def main():
     args = parser.parse_args()
     
     # Default NISN range
-    start_nisn = 2000000  # Starting from 002000000
-    end_nisn = 9999999    # Ending at 009999999
+    start_nisn = 89600040  # Starting from 002000000
+    end_nisn = 99999999    # Ending at 009999999
     
     # If --last flag is set, get the last attempted NISN from cache
     if args.last:
