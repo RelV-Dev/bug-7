@@ -23,7 +23,7 @@ class Colors:
     RESET = '\033[0m'
 
 # Base URLs and endpoints
-LOGIN_URL = "https://api.pijarsekolah.id/user/v2/login"
+LOGIN_URL = "https://auth-api.pijarsekolah.id/student/login"
 SCORE_URL = "https://api.pijarsekolah.id/exam/v2/score?page=1&size=50&mapel=&jenis_ujian=non-akm&sort_by=terbaru&tahun=2025"
 
 # Files for logging
