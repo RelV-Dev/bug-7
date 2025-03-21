@@ -52,22 +52,27 @@ def try_login(nisn):
     
     # Prepare login data
     login_data = {
-        "nisn": nisn,
-        "password": nisn,  # Using NISN as password
-        "role": "student",
-        "fcmToken": ""
+        "username": nisn,
+        "password": nisn,  # Password same as username
+        "remember": False,
+        "school": "https://siswa.pijarsekolah.id/sman3pati"
     }
     
     headers = {
-        "Content-Type": "application/json",
-        "Accept": "application/json, text/plain, */*",
-        "User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
-        "Origin": "https://siswa.pijarsekolah.id",
-        "Referer": "https://siswa.pijarsekolah.id/",
-        "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
-        "sec-ch-ua": '"Not-A.Brand";v="99", "Chromium";v="124"',
-        "sec-ch-ua-mobile": "?1",
-        "sec-ch-ua-platform": '"Android"'
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+    'Authorization': 'Basic cGlqYXJza2xoOmJkMjdmM2E5LTk1Y2MtNDdlMS04Y2IzLTBkYmY2NjVhMWYzOQ==',
+    'Connection': 'keep-alive',
+    'Content-Type': 'application/json',
+    'Origin': 'https://siswa.pijarsekolah.id',
+    'Referer': 'https://siswa.pijarsekolah.id/',
+    'Sec-Fetch-Dest': 'empty',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Site': 'same-site',
+    'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+    'sec-ch-ua': '"Not-A.Brand";v="99", "Chromium";v="124"',
+    'sec-ch-ua-mobile': '?1',
+    'sec-ch-ua-platform': '"Android"
     }
     
     try:
